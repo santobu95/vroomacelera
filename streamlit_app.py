@@ -14,7 +14,7 @@ from streamlit_folium import st_folium
 from shapely.geometry import MultiPoint
 
 st.set_page_config(page_title="Geofence Clustering", layout="centered")
-st.title("Acelera Manual Strategies, VROOM VROOM")
+st.title("Acelera Manual Strategies, VROOM VROOM | Use template: 104650 ")
 
 # Predefined named colors for clusters
 named_colors = [
