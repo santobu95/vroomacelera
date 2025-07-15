@@ -110,4 +110,3 @@ if uploaded_file:
             ).add_to(m)
 
         st_folium(m, width=700, height=500)
-
