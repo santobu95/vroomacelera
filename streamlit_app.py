@@ -14,7 +14,7 @@ from streamlit_folium import st_folium
 from shapely.geometry import MultiPoint
 
 st.set_page_config(page_title="Geofence Clustering", layout="centered")
-st.title("📍 Geofence Clustering App")
+st.title("Acelera Manual Strategies, VROOM VROOM")
 
 # Predefined named colors for clusters
 named_colors = [
@@ -23,10 +23,16 @@ named_colors = [
 ]
 
 # Upload file
-uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
+
+# Upload file
+uploaded_file = st.file_uploader("Upload your data file CSV or Excel", type=["csv", "xlsx"])
 
 if uploaded_file:
-    df = pd.read_excel(uploaded_file)
+    if uploaded_file.name.endswith('.csv'):
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = pd.read_excel(uploaded_file)
+
     df = df.dropna(subset=['lat', 'lng', 'completion_rate'])
 
     st.success("File uploaded and cleaned!")
