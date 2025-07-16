@@ -84,7 +84,7 @@ if uploaded_file:
             # Calculate Euclidean distance from centroid
             cluster_df['dist'] = np.sqrt((cluster_df['lat'] - centroid[0])**2 + (cluster_df['lng'] - centroid[1])**2)
 
-            # Remove top 5% farthest points (outliers)
+            # Remove top 2% farthest points (outliers)
             filtered_cluster = cluster_df[cluster_df['dist'] <= cluster_df['dist'].quantile(0.98)]
 
             # Continue only if we have enough points
@@ -101,18 +101,28 @@ if uploaded_file:
                 st.text_area("Copy-paste friendly coordinates (lat, lng):", coord_text, height=200)
 
         # Visualize map
-        st.subheader("Cluster Map")
         m = folium.Map(location=[df['lat'].mean(), df['lng'].mean()], zoom_start=12)
-        for _, row in df.iterrows():
-            folium.CircleMarker(
-                location=[row['lat'], row['lng']],
-                radius=4,
-                color=cluster_colors[row['cluster']],
+
+# Plot convex hull per cluster
+for cluster_id in df['cluster'].unique():
+    cluster_data = df[df['cluster'] == cluster_id]
+    points = list(zip(cluster_data['lat'], cluster_data['lng']))
+    
+    if len(points) >= 3:
+        # Compute the convex hull
+        hull = MultiPoint(points).convex_hull
+        
+        # Draw the polygon
+        if isinstance(hull, Polygon):  # Sometimes hull can be a LineString if only 2 points
+            folium.Polygon(
+                locations=[(lat, lng) for lat, lng in hull.exterior.coords],
+                color=cluster_colors[cluster_id],
                 fill=True,
-                fill_color=cluster_colors[row['cluster']],
+                fill_color=cluster_colors[cluster_id],
                 fill_opacity=0.3,
-                opacity=0.3,
-                popup=f"CR: {row['completion_rate']:.2f}, Cluster: {row['cluster']}"
+                weight=2,
+                popup=f"Cluster {cluster_id}"
             ).add_to(m)
 
-        st_folium(m, width=700, height=500)
+# Show the map
+st_folium(m, width=700, height=500)
